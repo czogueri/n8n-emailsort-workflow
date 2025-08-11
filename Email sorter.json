@@ -1,0 +1,174 @@
+{
+  "name": "Email sorter",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=id: {{ $json.id }}\n\nsubject: {{ $json.Subject }}\n\nsnippet: {{ $json.snippet }}",
+        "options": {
+          "systemMessage": "### Goal:\nTo manage incoming emails by filtering out unimportant ones and marking them as read.\n\n### Tasks:\n1. Check each email I receive.\n2. Determine if the email is important for me based on my Personal Context\n3. If the email is important, do nothing\n4. If the email is not important, mark as read\n\n### Irrelevant Content:\n- Everything related to promotions\n-\n\n### Personal Context:\n- I am an AI automation Agency owner.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        -144,
+        -176
+      ],
+      "id": "a91dc65f-fc42-444a-b21a-4c3f9573cc56",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -160,
+        64
+      ],
+      "id": "8c37ff8d-4b46-40e9-830a-8a81bb86ac5f",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "4u9MpSNqAr1u65VD",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {}
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -400,
+        -176
+      ],
+      "id": "8160d7c0-31db-4c36-b0ba-d1201f16faa3",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "G8HmoNT1tkGavCgk",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.1,
+      "position": [
+        144,
+        64
+      ],
+      "id": "68aac0e7-489f-43bd-b3f1-ddfca38e4536",
+      "name": "Mark a message as read in Gmail",
+      "webhookId": "7177cfa2-0435-4a4e-9d3d-6fd944eb46a2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "G8HmoNT1tkGavCgk",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "198996b79344dbb6",
+          "threadId": "198996907e8ec680",
+          "snippet": "App password created to sign in to your account dozie9307@gmail.com If you didn&#39;t generate this password for n8n credential, someone might be using your account. Check and secure your account now.",
+          "payload": {
+            "mimeType": "multipart/alternative"
+          },
+          "sizeEstimate": 12146,
+          "historyId": "19580",
+          "internalDate": "1754920613000",
+          "labels": [
+            {
+              "id": "INBOX",
+              "name": "INBOX"
+            },
+            {
+              "id": "CATEGORY_UPDATES",
+              "name": "CATEGORY_UPDATES"
+            },
+            {
+              "id": "UNREAD",
+              "name": "UNREAD"
+            }
+          ],
+          "Subject": "Security alert",
+          "From": "Google <no-reply@accounts.google.com>",
+          "To": "dozie9307@gmail.com"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark a message as read in Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "93cb93ac-b5af-468d-9d6b-99bc6240266b",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "0babef6d5b0a40ac0d899ee56aa849ec85a32c585cf69986fa058be7f52046a3"
+  },
+  "id": "ze6GP2qKkbpd8czl",
+  "tags": []
+}
